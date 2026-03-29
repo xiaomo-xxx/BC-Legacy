@@ -1,9 +1,7 @@
 package com.thepigcat.buildcraft.registries;
 
 import com.thepigcat.buildcraft.BuildcraftLegacy;
-import com.thepigcat.buildcraft.content.menus.CombustionEngineMenu;
 import com.thepigcat.buildcraft.content.menus.DiamondPipeMenu;
-import com.thepigcat.buildcraft.content.menus.StirlingEngineMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -16,11 +14,6 @@ import java.util.function.Supplier;
 public final class BCMenuTypes {
     public static final DeferredRegister<MenuType<?>> MENUS =
             DeferredRegister.create(Registries.MENU, BuildcraftLegacy.MODID);
-
-    public static final Supplier<MenuType<StirlingEngineMenu>> STIRLING_ENGINE =
-            registerMenuType("stirling_engine", StirlingEngineMenu::new);
-    public static final Supplier<MenuType<CombustionEngineMenu>> COMBUSTION_ENGINE =
-            registerMenuType("combustion_engine", CombustionEngineMenu::new);
 
     public static final Supplier<MenuType<DiamondPipeMenu>> DIAMOND_PIPE =
             registerMenuType("diamond_pipe", DiamondPipeMenu::new);

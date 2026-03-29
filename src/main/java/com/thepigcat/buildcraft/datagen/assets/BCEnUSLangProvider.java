@@ -3,15 +3,9 @@ package com.thepigcat.buildcraft.datagen.assets;
 import com.thepigcat.buildcraft.BuildcraftLegacy;
 import com.thepigcat.buildcraft.api.blockentities.RedstoneBlockEntity;
 import com.thepigcat.buildcraft.registries.BCBlocks;
-import com.thepigcat.buildcraft.registries.BCFluids;
 import com.thepigcat.buildcraft.registries.BCItems;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.data.LanguageProvider;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-
-import java.util.function.Supplier;
 
 public class BCEnUSLangProvider extends LanguageProvider {
     public BCEnUSLangProvider(PackOutput output) {
@@ -25,17 +19,8 @@ public class BCEnUSLangProvider extends LanguageProvider {
         addItem(BCItems.STONE_GEAR, "Stone Gear");
         addItem(BCItems.IRON_GEAR, "Iron Gear");
         addItem(BCItems.GOLD_GEAR, "Gold Gear");
-        addItem(BCFluids.OIL.getDeferredBucket(), "Oil Bucket");
-
         addBlock(BCBlocks.CRATE, "Crate");
         addBlock(BCBlocks.TANK, "Tank");
-        addBlock(BCFluids.OIL.block, "Oil");
-
-        addBlock(BCBlocks.REDSTONE_ENGINE, "Redstone Engine");
-        addBlock(BCBlocks.STIRLING_ENGINE, "Stirling Engine");
-        addBlock(BCBlocks.COMBUSTION_ENGINE, "Combustion Engine");
-
-        addFluidType(BCFluids.OIL.fluidType, "Oil");
 
         add("itemGroup.buildcraft.bc_tab", "Buildcraft");
 
@@ -59,11 +44,5 @@ public class BCEnUSLangProvider extends LanguageProvider {
     private void addRedstoneSignalType(RedstoneBlockEntity.RedstoneSignalType signalType, String translation) {
         add("redstone_signal_type."+BuildcraftLegacy.MODID+"."+signalType.getSerializedName(), translation);
     }
-
-    private void addFluidType(Supplier<FluidType> fluidTypeSupplier, String translation) {
-        ResourceLocation location = NeoForgeRegistries.FLUID_TYPES.getKey(fluidTypeSupplier.get());
-        String fluidTypeName = location.getPath();
-        String modid = location.getNamespace();
-        add("fluid_type."+modid+"."+fluidTypeName, translation);
-    }
 }
+

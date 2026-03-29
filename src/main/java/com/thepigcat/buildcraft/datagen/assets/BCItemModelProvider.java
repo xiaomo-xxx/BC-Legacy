@@ -3,7 +3,6 @@ package com.thepigcat.buildcraft.datagen.assets;
 import com.thepigcat.buildcraft.BuildcraftLegacy;
 import com.thepigcat.buildcraft.api.blocks.PipeBlock;
 import com.thepigcat.buildcraft.registries.BCBlocks;
-import com.thepigcat.buildcraft.registries.BCFluids;
 import com.thepigcat.buildcraft.registries.BCItems;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -25,10 +24,7 @@ import java.util.Set;
 public class BCItemModelProvider extends ItemModelProvider {
     private static final Set<Block> DEFAULT_MODEL_BLACKLIST = Set.of(
             BCBlocks.TANK.get(),
-            BCBlocks.CRATE.get(),
-            BCBlocks.REDSTONE_ENGINE.get(),
-            BCBlocks.STIRLING_ENGINE.get(),
-            BCBlocks.COMBUSTION_ENGINE.get()
+            BCBlocks.CRATE.get()
     );
 
     public BCItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
@@ -42,8 +38,6 @@ public class BCItemModelProvider extends ItemModelProvider {
         basicItem(BCItems.STONE_GEAR.get());
         basicItem(BCItems.IRON_GEAR.get());
         basicItem(BCItems.GOLD_GEAR.get());
-
-        basicItem(BCFluids.OIL.getBucket());
 
         blockItems();
     }

@@ -1,7 +1,6 @@
 package com.thepigcat.buildcraft.client.items;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.thepigcat.buildcraft.api.blocks.EngineBlock;
 import com.thepigcat.buildcraft.api.capabilties.JumboItemHandler;
 import com.thepigcat.buildcraft.client.blockentities.CrateBERenderer;
 import com.thepigcat.buildcraft.data.BCDataComponents;

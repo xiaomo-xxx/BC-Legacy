@@ -2,7 +2,6 @@ package com.thepigcat.buildcraft;
 
 import com.mojang.datafixers.util.Either;
 import com.portingdeadmods.portingdeadlibs.api.blockentities.ContainerBlockEntity;
-import com.portingdeadmods.portingdeadlibs.api.fluids.PDLFluid;
 import com.thepigcat.buildcraft.api.capabilties.JumboItemHandlerItemWrapper;
 import com.thepigcat.buildcraft.api.pipes.Pipe;
 import com.thepigcat.buildcraft.api.pipes.PipeType;
@@ -64,10 +63,6 @@ public final class BuildcraftLegacy {
                         output.accept(item);
                     }
 
-                    for (PDLFluid fluid : BCFluids.HELPER.getFluids()) {
-                        output.accept(fluid.deferredBucket);
-                    }
-
                     PipesRegistry.PIPES.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getValue().tabOrdering())).forEach(e -> {
                         Block block = BuiltInRegistries.BLOCK.get(rl(e.getKey()));
                         output.accept(block);
@@ -80,7 +75,6 @@ public final class BuildcraftLegacy {
         BCBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         BCBlocks.BLOCKS.register(modEventBus);
         BCItems.ITEMS.register(modEventBus);
-        BCFluids.HELPER.register(modEventBus);
         BCDataComponents.DATA_COMPONENTS.register(modEventBus);
         BCMenuTypes.MENUS.register(modEventBus);
         BCPipeTypes.init();
@@ -105,14 +99,8 @@ public final class BuildcraftLegacy {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BCBlockEntities.VOID_ITEM_PIPE.get(), VoidItemPipeBE::getItemHandler);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BCBlockEntities.DIAMOND_ITEM_PIPE.get(), DiamondItemPipeBE::getItemHandler);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BCBlockEntities.CRATE.get(), CrateBE::getItemHandler);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BCBlockEntities.STIRLING_ENGINE.get(), ContainerBlockEntity::getItemHandlerOnSide);
         // FLUID
-        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, BCBlockEntities.COMBUSTION_ENGINE.get(), ContainerBlockEntity::getFluidHandlerOnSide);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, BCBlockEntities.TANK.get(), ContainerBlockEntity::getFluidHandlerOnSide);
-        // ENERGY
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, BCBlockEntities.REDSTONE_ENGINE.get(), ContainerBlockEntity::getEnergyStorageOnSide);
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, BCBlockEntities.STIRLING_ENGINE.get(), ContainerBlockEntity::getEnergyStorageOnSide);
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, BCBlockEntities.COMBUSTION_ENGINE.get(), ContainerBlockEntity::getEnergyStorageOnSide);
 
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new JumboItemHandlerItemWrapper(stack), BCBlocks.CRATE);
         event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidHandlerItemStack(BCDataComponents.TANK_CONTENT, stack, BCConfig.tankCapacity), BCBlocks.TANK);

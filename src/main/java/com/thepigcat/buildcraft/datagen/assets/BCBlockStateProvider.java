@@ -25,9 +25,6 @@ public class BCBlockStateProvider extends BlockStateProvider {
         crateBlock(BCBlocks.CRATE.get());
 //        pillarBlock(BCBlocks.QUARRY.get(), inDir(blockTexture(BCBlocks.QUARRY.get()), "machine"));
         tankBlock(BCBlocks.TANK.get());
-        engineBlock(BCBlocks.REDSTONE_ENGINE.get());
-        engineBlock(BCBlocks.STIRLING_ENGINE.get());
-        engineBlock(BCBlocks.COMBUSTION_ENGINE.get());
 
         for (Block block : BCBlocks.BLOCKS.getRegistry().get()) {
             if (block instanceof ExtractingPipeBlock) {
@@ -48,31 +45,6 @@ public class BCBlockStateProvider extends BlockStateProvider {
                 blockTexture(block, "_side"),
                 blockTexture(block, "_side")
         ).texture("particle", blockTexture(block, "_top")));
-    }
-
-    private void engineBlock(Block block) {
-        ResourceLocation blockLoc = key(block);
-        String path = "block/engine/" + blockLoc.getPath();
-        BlockModelBuilder model = models().withExistingParent(name(block), modLoc("block/engine_base"))
-                .texture("top", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), path + "_top"))
-                .texture("side", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), path + "_side"));
-        facingBlock(block, model);
-    }
-
-    public void facingBlock(Block block, ModelFile model) {
-        getVariantBuilder(block)
-                .partialState().with(BlockStateProperties.FACING, Direction.UP)
-                .modelForState().modelFile(model).addModel()
-                .partialState().with(BlockStateProperties.FACING, Direction.DOWN)
-                .modelForState().modelFile(model).rotationX(180).addModel()
-                .partialState().with(BlockStateProperties.FACING, Direction.NORTH)
-                .modelForState().modelFile(model).rotationX(90).addModel()
-                .partialState().with(BlockStateProperties.FACING, Direction.SOUTH)
-                .modelForState().modelFile(model).rotationX(90).rotationY(180).addModel()
-                .partialState().with(BlockStateProperties.FACING, Direction.EAST)
-                .modelForState().modelFile(model).rotationX(90).rotationY(90).addModel()
-                .partialState().with(BlockStateProperties.FACING, Direction.WEST)
-                .modelForState().modelFile(model).rotationX(90).rotationY(270).addModel();
     }
 
     private void tankBlock(Block block) {
@@ -151,6 +123,15 @@ public class BCBlockStateProvider extends BlockStateProvider {
     }
 
     private ModelFile pipeBaseModel(ResourceLocation blockLoc) {
+        if (blockLoc.getPath().equals("diamond")) {
+            return models().withExistingParent(blockLoc.getPath() + "_base", modLoc("block/pipe_base_colored"))
+                    .texture("down", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), "block/" + blockLoc.getPath() + "_down"))
+                    .texture("up", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), "block/" + blockLoc.getPath() + "_up"))
+                    .texture("north", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), "block/" + blockLoc.getPath() + "_north"))
+                    .texture("south", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), "block/" + blockLoc.getPath() + "_south"))
+                    .texture("west", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), "block/" + blockLoc.getPath() + "_west"))
+                    .texture("east", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), "block/" + blockLoc.getPath() + "_east"));
+        }
         return models().withExistingParent(blockLoc.getPath() + "_base", modLoc("block/pipe_base"))
                 .texture("texture", ResourceLocation.fromNamespaceAndPath(blockLoc.getNamespace(), "block/" + blockLoc.getPath()));
     }

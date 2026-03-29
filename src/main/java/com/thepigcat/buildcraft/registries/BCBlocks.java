@@ -1,7 +1,8 @@
 package com.thepigcat.buildcraft.registries;
 
 import com.thepigcat.buildcraft.BuildcraftLegacy;
-import com.thepigcat.buildcraft.content.blocks.*;
+import com.thepigcat.buildcraft.content.blocks.CrateBlock;
+import com.thepigcat.buildcraft.content.blocks.TankBlock;
 import com.thepigcat.buildcraft.content.items.blocks.CrateBlockItem;
 import com.thepigcat.buildcraft.content.items.blocks.TankBlockItem;
 import com.thepigcat.buildcraft.data.BCDataComponents;
@@ -31,14 +32,6 @@ public final class BCBlocks {
 //            BlockBehaviour.Properties.of().strength(1.5f, 6).sound(SoundType.STONE).mapColor(MapColor.STONE));
 //    public static final DeferredBlock<ExtractingItemPipeBlock> WOODEN_ITEM_PIPE = registerBlockAndItem("wooden_pipe", ExtractingItemPipeBlock::new,
 //            BlockBehaviour.Properties.of().strength(2.0f, 3).sound(SoundType.WOOD).mapColor(MapColor.WOOD));
-
-    // ENGINES
-    public static final DeferredBlock<RedstoneEngineBlock> REDSTONE_ENGINE = registerBlockAndItem("redstone_engine", RedstoneEngineBlock::new,
-            BlockBehaviour.Properties.of().strength(2.0f).sound(SoundType.WOOD).mapColor(MapColor.WOOD));
-    public static final DeferredBlock<StirlingEngineBlock> STIRLING_ENGINE = registerBlockAndItem("stirling_engine", StirlingEngineBlock::new,
-            BlockBehaviour.Properties.of().strength(1.5f).sound(SoundType.STONE).mapColor(MapColor.STONE).requiresCorrectToolForDrops());
-    public static final DeferredBlock<CombustionEngineBlock> COMBUSTION_ENGINE = registerBlockAndItem("combustion_engine", CombustionEngineBlock::new,
-            BlockBehaviour.Properties.of().strength(5.0f).sound(SoundType.METAL).mapColor(MapColor.METAL).requiresCorrectToolForDrops());
 
     // MISC
     public static final DeferredBlock<CrateBlock> CRATE = registerBlockAndItem("crate", CrateBlock::new,

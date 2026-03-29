@@ -4,7 +4,6 @@ import com.thepigcat.buildcraft.BuildcraftLegacy;
 import com.thepigcat.buildcraft.PipesRegistry;
 import com.thepigcat.buildcraft.api.pipes.Pipe;
 import com.thepigcat.buildcraft.registries.BCBlocks;
-import com.thepigcat.buildcraft.registries.BCFluids;
 import com.thepigcat.buildcraft.registries.BCItems;
 import com.thepigcat.buildcraft.tags.BCTags;
 import net.minecraft.core.HolderLookup;
@@ -107,8 +106,6 @@ public class BCTagProvider {
 
         @Override
         protected void addTags(HolderLookup.Provider provider) {
-            tag(BCTags.Fluids.OIL).add(BCFluids.OIL.getStillFluid(), BCFluids.OIL.getStillFluid());
-            tag(BCTags.Fluids.COMBUSTION_FUEL).addTag(BCTags.Fluids.OIL);
         }
     }
 
@@ -119,8 +116,6 @@ public class BCTagProvider {
 
         @Override
         protected void addTags(HolderLookup.Provider provider) {
-            tag(BCTags.Biomes.GENERATE_OIL)
-                    .addTags(Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_DESERT, Tags.Biomes.IS_BADLANDS, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_SAVANNA);
         }
     }
 

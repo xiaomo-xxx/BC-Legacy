@@ -1,57 +1,34 @@
-<div align="center">
+# BuildCraft Legacy (NeoForge 1.21.1)
 
-<img src="https://cdn.modrinth.com/data/LTaa2o7Y/2f622ecc73f0a1e5e3304e7f6f9b5bd5d3ab82a0.png" width="200">
+> ⚠️ 仅自用，基于 [Buildcraft-Legacy](https://github.com/Thepigcat76/Buildcraft-Legacy) 修改
 
-# BuildCraft - NeoForge 1.21.1
+## 管道类型
 
-A port of BuildCraft to Minecraft 1.21.1 (NeoForge), based on [Buildcraft-Legacy](https://github.com/Thepigcat76/Buildcraft-Legacy).
+| 管道 | 功能 | 速度 |
+|------|------|------|
+| 木质管道 | 抽取物品 | 慢 |
+| 圆石管道 | 运输物品 | 慢 |
+| 石质管道 | 运输物品 | 慢 |
+| 铁质管道 | 运输物品 | 慢 |
+| 石英管道 | 运输物品 | 慢 |
+| 砂岩管道 | 运输物品 | 慢 |
+| 粘土管道 | 运输物品 | 慢 |
+| 金质管道 | 运输物品 | 快 |
+| 钻石管道 | 过滤 + 抽取 | 中 |
+| 虚空管道 | 销毁物品 | 极快 |
 
-[![](https://img.shields.io/github/license/Thepigcat76/Buildcraft-Legacy?style=flat&color=900c3f)](https://github.com/Thepigcat76/Buildcraft-Legacy/blob/main/LICENSE)
+## 其他方块
 
-</div>
+- **箱子** (Crate) — 大容量存储
+- **储罐** (Tank) — 流体存储
 
-## Features
-
-### Pipes (无需额外动力驱动！)
-
-All pipes work without any power source. Items flow automatically through the pipe network.
-
-| Pipe | Type | Description |
-|------|------|-------------|
-| 🪵 Wooden | Extracting | Pulls items from adjacent containers |
-| 🪨 Cobblestone | Basic | Basic item transport |
-| 🪨 Stone | Basic | Basic item transport |
-| ✨ Quartz | Basic | Basic item transport |
-| 🏜️ Sandstone | Basic | Basic item transport |
-| 🥇 Gold | Fast | Fast item transport (2x speed) |
-| 🔩 Iron | Directional | One-way item transport |
-| 🧱 Clay | Color Priority | Prioritizes same-color containers |
-| 💎 Diamond | Extracting | Extracting + filtering |
-| ⬛ Void | Destruction | Destroys items that enter it |
-
-### Other Features
-- 🛢️ Tanks (fluid storage)
-- 📦 Crates (item storage)
-- ⚙️ Engines (Redstone, Stirling, Combustion)
-- 🛢️ Oil world generation
-- 🚫 No robots
-
-## Based On
-
-This project is based on [Buildcraft-Legacy](https://github.com/Thepigcat76/Buildcraft-Legacy) by Thepigcat76, which is an unofficial port of the original [BuildCraft](https://www.curseforge.com/minecraft/mc-mods/buildcraft) mod.
-
-Original BuildCraft is licensed under MPL 2.0. Buildcraft-Legacy uses MIT license.
-
-## Building
+## 构建
 
 ```bash
 ./gradlew build
 ```
 
-The compiled JAR will be in `build/libs/`.
+## 依赖
 
-## Requirements
-
-- Minecraft 1.21.1
 - NeoForge 21.1.209+
-- Java 21
+- Minecraft 1.21.1

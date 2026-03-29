@@ -7,7 +7,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,24 +14,23 @@ import org.jetbrains.annotations.NotNull;
  * 6 colored rows (one per direction) × 9 filter slots
  */
 public class DiamondPipeScreen extends AbstractContainerScreen<DiamondPipeMenu> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
-            BuildcraftLegacy.MODID, "textures/gui/diamond_pipe.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
 
     private static final int[] SIDE_COLORS = {
             0xFFFFFFFF,  // DOWN  - White
             0xFFFF8C00,  // UP    - Orange
-            0xFFCC00CC,  // NORTH - Magenta
+            0xFF00B4B4,  // NORTH - Cyan
             0xFF64C8FF,  // SOUTH - Light Blue
             0xFFFFFF00,  // WEST  - Yellow
             0xFF00FF00,  // EAST  - Lime
     };
 
-    private static final String[] SIDE_LABELS = {"▼", "▲", "N", "S", "W", "E"};
+    private static final String[] SIDE_LABELS = {"D", "U", "N", "S", "W", "E"};
 
     public DiamondPipeScreen(DiamondPipeMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.imageWidth = 176;
-        this.imageHeight = 252;
+        this.imageHeight = 222;
     }
 
     @Override
@@ -47,23 +45,29 @@ public class DiamondPipeScreen extends AbstractContainerScreen<DiamondPipeMenu> 
         int y = (height - imageHeight) / 2;
 
         guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
+
+        // Draw colored direction bars on the right edge of each filter row
+        for (int side = 0; side < 6; side++) {
+            int barX = x + 170;
+            int barY = y + 18 + side * 18;
+            guiGraphics.fill(barX, barY, barX + 4, barY + 16, SIDE_COLORS[side]);
+        }
     }
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         // Title
-        guiGraphics.drawString(font, title, titleLabelX, titleLabelY, 0xFFFFFF, false);
+        guiGraphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
 
-        // Direction labels
+        // Direction labels before the filter slots
         for (int side = 0; side < 6; side++) {
-            String label = Direction.values()[side].name();
-            int labelX = 48;
-            int labelY = 22 + side * 28;
-            guiGraphics.drawString(font, label, labelX, labelY, SIDE_COLORS[side], false);
+            int labelX = 0;
+            int labelY = 22 + side * 18;
+            guiGraphics.drawString(font, SIDE_LABELS[side], labelX, labelY, SIDE_COLORS[side] | 0xFF000000, false);
         }
 
-        // Inventory label
-        guiGraphics.drawString(font, Component.translatable("container.inventory"), 8, 194, 0x404040, false);
+        // Inventory label above player inventory
+        guiGraphics.drawString(font, Component.translatable("container.inventory"), 8, 127, 0x404040, false);
     }
 
     @Override

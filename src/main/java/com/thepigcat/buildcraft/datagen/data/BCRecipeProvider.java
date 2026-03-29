@@ -66,11 +66,6 @@ public class BCRecipeProvider extends net.minecraft.data.recipes.RecipeProvider 
         // Void pipe - obsidian + glass
         dynamicPipeRecipe(recipeOutput, "void_pipe", Ingredient.of(Items.OBSIDIAN), 8);
 
-        // === Engine Recipes ===
-        engineRecipe(recipeOutput, ItemTags.PLANKS, BCTags.Items.WOODEN_GEAR, BCBlocks.REDSTONE_ENGINE);
-        engineRecipe(recipeOutput, Tags.Items.COBBLESTONES, BCTags.Items.STONE_GEAR, BCBlocks.STIRLING_ENGINE);
-        engineRecipe(recipeOutput, Tags.Items.INGOTS_IRON, BCTags.Items.IRON_GEAR, BCBlocks.COMBUSTION_ENGINE);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, BCBlocks.CRATE)
                 .pattern("LSL")
                 .pattern("L L")
@@ -118,20 +113,6 @@ public class BCRecipeProvider extends net.minecraft.data.recipes.RecipeProvider 
 
     public static Criterion<InventoryChangeTrigger.TriggerInstance> has(TagKey<Item> tag) {
         return RecipeProvider.has(tag);
-    }
-
-    private void engineRecipe(RecipeOutput recipeOutput, TagKey<Item> material, TagKey<Item> gear, ItemLike result) {
-        String path = material.location().getPath();
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result)
-                .pattern("MMM")
-                .pattern(" L ")
-                .pattern("GPG")
-                .define('M', material)
-                .define('L', Tags.Items.GLASS_BLOCKS)
-                .define('G', gear)
-                .define('P', Items.PISTON)
-                .unlockedBy("has_"+path, has(material))
-                .save(recipeOutput);
     }
 
     private void pipeRecipe(RecipeOutput recipeOutput, TagKey<Item> material, ItemLike result) {

@@ -1,7 +1,12 @@
 package com.thepigcat.buildcraft.registries;
 
 import com.thepigcat.buildcraft.BuildcraftLegacy;
-import com.thepigcat.buildcraft.content.blockentities.*;
+import com.thepigcat.buildcraft.content.blockentities.CrateBE;
+import com.thepigcat.buildcraft.content.blockentities.DiamondItemPipeBE;
+import com.thepigcat.buildcraft.content.blockentities.ExtractItemPipeBE;
+import com.thepigcat.buildcraft.content.blockentities.ItemPipeBE;
+import com.thepigcat.buildcraft.content.blockentities.TankBE;
+import com.thepigcat.buildcraft.content.blockentities.VoidItemPipeBE;
 import com.thepigcat.buildcraft.content.blocks.ExtractingItemPipeBlock;
 import com.thepigcat.buildcraft.content.blocks.ItemPipeBlock;
 import com.thepigcat.buildcraft.content.blocks.DiamondItemPipeBlock;
@@ -32,13 +37,6 @@ public final class BCBlockEntities {
             () -> BlockEntityType.Builder.of(TankBE::new, BCBlocks.TANK.get()).build(null));
     public static final Supplier<BlockEntityType<CrateBE>> CRATE = BLOCK_ENTITIES.register("crate",
             () -> BlockEntityType.Builder.of(CrateBE::new, BCBlocks.CRATE.get()).build(null));
-
-    public static final Supplier<BlockEntityType<RedstoneEngineBE>> REDSTONE_ENGINE = BLOCK_ENTITIES.register("redstone_engine",
-            () -> BlockEntityType.Builder.of(RedstoneEngineBE::new, BCBlocks.REDSTONE_ENGINE.get()).build(null));
-    public static final Supplier<BlockEntityType<StirlingEngineBE>> STIRLING_ENGINE = BLOCK_ENTITIES.register("stirling_engine",
-            () -> BlockEntityType.Builder.of(StirlingEngineBE::new, BCBlocks.STIRLING_ENGINE.get()).build(null));
-    public static final Supplier<BlockEntityType<CombustionEngineBE>> COMBUSTION_ENGINE = BLOCK_ENTITIES.register("combustion_engine",
-            () -> BlockEntityType.Builder.of(CombustionEngineBE::new, BCBlocks.COMBUSTION_ENGINE.get()).build(null));
 
     private static Block[] collectBlocks(Class<? extends Block> clazz) {
         return BuiltInRegistries.BLOCK.stream().filter(clazz::isInstance).toList().toArray(Block[]::new);

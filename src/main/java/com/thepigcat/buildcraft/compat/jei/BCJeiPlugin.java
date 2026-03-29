@@ -1,6 +1,5 @@
 package com.thepigcat.buildcraft.compat.jei;
 
-import com.portingdeadmods.portingdeadlibs.api.client.screens.PDLAbstractContainerScreen;
 import com.thepigcat.buildcraft.BuildcraftLegacy;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -18,6 +17,5 @@ public final class BCJeiPlugin implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addGenericGuiContainerHandler(PDLAbstractContainerScreen.class, new WidgetBounds());
     }
 }

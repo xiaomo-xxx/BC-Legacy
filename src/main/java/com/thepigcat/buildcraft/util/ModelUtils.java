@@ -159,6 +159,23 @@ public final class ModelUtils {
     });
 
     public static final BiFunction<Pipe, ResourceLocation, String> DEFAULT_BLOCK_MODEL_FILE = ((pipe, texture) -> {
+        // Diamond pipe uses per-face textures for the base model
+        if (texture.getPath().endsWith("_base") && texture.getPath().contains("diamond")) {
+            String blockPath = texture.getPath().replace("_base", "").replace("block/", "");
+            return """
+                    {
+                      "parent": "buildcraft:block/pipe_base_colored",
+                      "textures": {
+                        "down": "buildcraft:block/%s_down",
+                        "up": "buildcraft:block/%s_up",
+                        "north": "buildcraft:block/%s_north",
+                        "south": "buildcraft:block/%s_south",
+                        "west": "buildcraft:block/%s_west",
+                        "east": "buildcraft:block/%s_east"
+                      }
+                    }""".formatted(blockPath, blockPath, blockPath, blockPath, blockPath, blockPath);
+        }
+
         int textureIndex = 0;
         String parent = "";
         if (texture.getPath().endsWith("_connection")) {
