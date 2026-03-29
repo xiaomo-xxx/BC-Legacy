@@ -1,7 +1,6 @@
 package com.thepigcat.buildcraft.client.screens;
 
 import com.thepigcat.buildcraft.BuildcraftLegacy;
-import com.thepigcat.buildcraft.content.blockentities.DiamondItemPipeBE;
 import com.thepigcat.buildcraft.content.menus.DiamondPipeMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -13,34 +12,33 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Diamond pipe filter GUI screen.
- * Shows 6 rows of 9 filter slots, each row labeled with direction + color.
+ * 6 colored rows (one per direction) × 9 filter slots
  */
 public class DiamondPipeScreen extends AbstractContainerScreen<DiamondPipeMenu> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
             BuildcraftLegacy.MODID, "textures/gui/diamond_pipe.png");
 
-    // Direction colors matching Minecraft dye colors
     private static final int[] SIDE_COLORS = {
-            0xFFFFFF,  // DOWN  - White
-            0xFF6600,  // UP    - Orange
-            0xCC00CC,  // NORTH - Magenta
-            0x66CCFF,  // SOUTH - Light Blue
-            0xFFFF00,  // WEST  - Yellow
-            0x00FF00,  // EAST  - Lime
+            0xFFFFFFFF,  // DOWN  - White
+            0xFFFF8C00,  // UP    - Orange
+            0xFFCC00CC,  // NORTH - Magenta
+            0xFF64C8FF,  // SOUTH - Light Blue
+            0xFFFFFF00,  // WEST  - Yellow
+            0xFF00FF00,  // EAST  - Lime
     };
 
-    private static final String[] SIDE_NAMES = {"↓", "↑", "N", "S", "W", "E"};
+    private static final String[] SIDE_LABELS = {"▼", "▲", "N", "S", "W", "E"};
 
     public DiamondPipeScreen(DiamondPipeMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.imageWidth = 176;
-        this.imageHeight = 220;
+        this.imageHeight = 252;
     }
 
     @Override
     protected void init() {
         super.init();
-        this.titleLabelY = 4;
+        this.titleLabelY = 6;
     }
 
     @Override
@@ -48,27 +46,24 @@ public class DiamondPipeScreen extends AbstractContainerScreen<DiamondPipeMenu> 
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
 
-        // Draw background
         guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
-
-        // Draw colored indicators for each side row
-        for (int side = 0; side < 6; side++) {
-            int rowY = y + 18 + side * 18;
-            // Small colored bar on the left
-            guiGraphics.fill(x + 1, rowY, x + 3, rowY + 16, 0xFF000000 | SIDE_COLORS[side]);
-        }
     }
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        super.renderLabels(guiGraphics, mouseX, mouseY);
+        // Title
+        guiGraphics.drawString(font, title, titleLabelX, titleLabelY, 0xFFFFFF, false);
 
-        // Draw direction labels
+        // Direction labels
         for (int side = 0; side < 6; side++) {
-            int rowY = 18 + side * 18;
-            String label = Direction.values()[side].name().substring(0, 1) + " " + SIDE_NAMES[side];
-            guiGraphics.drawString(font, label, 176 - font.width(label) - 2, rowY + 4, SIDE_COLORS[side], false);
+            String label = Direction.values()[side].name();
+            int labelX = 48;
+            int labelY = 22 + side * 28;
+            guiGraphics.drawString(font, label, labelX, labelY, SIDE_COLORS[side], false);
         }
+
+        // Inventory label
+        guiGraphics.drawString(font, Component.translatable("container.inventory"), 8, 194, 0x404040, false);
     }
 
     @Override
