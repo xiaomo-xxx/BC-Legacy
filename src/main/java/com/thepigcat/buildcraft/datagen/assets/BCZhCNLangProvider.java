@@ -52,5 +52,28 @@ public class BCZhCNLangProvider extends LanguageProvider {
         add("redstone_signal_type.buildcraft.ignored", "忽略");
         add("redstone_signal_type.buildcraft.low_signal", "低信号");
         add("redstone_signal_type.buildcraft.high_signal", "高信号");
+
+        // 配置项
+        add("buildcraft.configuration.capacity.fluid", "流体容量");
+        add("buildcraft.configuration.capacity.energy", "能量容量");
+        add("buildcraft.configuration.capacity.items", "物品容量");
+        add("buildcraft.configuration.production.energy", "能量产出");
+        add("buildcraft.configuration.pipes.speed", "管道速度");
+        add("buildcraft.configuration.tank_capacity", "储罐容量");
+        add("buildcraft.configuration.tank_retain_fluids", "储罐保留流体");
+        add("buildcraft.configuration.crate_item_capacity", "板条箱容量");
+        add("buildcraft.configuration.crate_retain_items", "板条箱保留物品");
+        add("buildcraft.configuration.redstone_engine_energy_capacity", "红石引擎能量容量");
+        add("buildcraft.configuration.redstone_engine_energy_production", "红石引擎能量产出");
+        add("buildcraft.configuration.stirling_engine_energy_capacity", "斯特林引擎能量容量");
+        add("buildcraft.configuration.stirling_engine_energy_production", "斯特林引擎能量产出");
+        add("buildcraft.configuration.combustion_engine_energy_capacity", "燃烧引擎能量容量");
+        add("buildcraft.configuration.combustion_engine_energy_production", "燃烧引擎能量产出");
+        add("buildcraft.configuration.combustion_engine_fluid_capacity", "燃烧引擎流体容量");
+        add("buildcraft.configuration.basic_pipe_speed", "基础管道速度");
+        add("buildcraft.configuration.wooden_pipe_speed", "木质管道速度");
+        add("buildcraft.configuration.gold_pipe_speed", "金质管道速度");
+        add("buildcraft.configuration.diamond_pipe_speed", "钻石管道速度");
+        add("buildcraft.configuration.void_pipe_speed", "虚空管道速度");
     }
 }

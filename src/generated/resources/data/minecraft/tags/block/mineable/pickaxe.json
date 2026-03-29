@@ -1,5 +1,13 @@
 {
   "values": [
-    "buildcraft:tank"
+    "buildcraft:tank",
+    "buildcraft:stone_pipe",
+    "buildcraft:gold_pipe",
+    "buildcraft:diamond_pipe",
+    "buildcraft:void_pipe",
+    "buildcraft:sandstone_pipe",
+    "buildcraft:quartz_pipe",
+    "buildcraft:iron_pipe",
+    "buildcraft:cobblestone_pipe"
   ]
 }
