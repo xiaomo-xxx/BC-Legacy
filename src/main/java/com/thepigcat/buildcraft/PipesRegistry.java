@@ -23,13 +23,14 @@ public final class PipesRegistry {
     private static boolean isErrored = false;
 
     /**
-     * Writes default pipe JSON files for any pipes that don't have a config file yet.
-     * This ensures new pipes added in updates are available in-game.
+     * Writes default pipe JSON files. Regenerates all pipe configs to ensure
+     * code-defined values (speed, textures, etc.) are always used.
+     * User customizations in JSON will be overwritten on update.
      */
     public static void writeDefaultPipeFiles() {
         File dir = getPipesDirectory();
 
-        // Create directory if it doesn't exist
+        // Always regenerate pipe configs to pick up code changes
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -42,19 +43,29 @@ public final class PipesRegistry {
         Map<String, Pipe> pipes = BCPipes.HELPER.getPipes();
         for (Map.Entry<String, Pipe> entry : pipes.entrySet()) {
             File file = new File(dir, entry.getKey() + ".json");
-            // Only write if the file doesn't exist yet (new pipes from updates)
-            if (!file.exists()) {
-                JsonElement json = entry.getValue().toJson();
-                if (json == null) {
-                    BuildcraftLegacy.LOGGER.error("Pipe {} could not be written to Json due to encoding error", entry.getKey());
-                    continue;
-                }
+            JsonElement json = entry.getValue().toJson();
+            if (json == null) {
+                BuildcraftLegacy.LOGGER.error("Pipe {} could not be written to Json due to encoding error", entry.getKey());
+                continue;
+            }
 
-                try (FileWriter writer = new FileWriter(file)) {
-                    GSON.toJson(json, writer);
-                    BuildcraftLegacy.LOGGER.info("Created pipe config: {}", entry.getKey());
-                } catch (Exception e) {
-                    BuildcraftLegacy.LOGGER.error("An error occurred while generating pipe jsons, affected pipe: {}", entry.getKey(), e);
+            try (FileWriter writer = new FileWriter(file)) {
+                GSON.toJson(json, writer);
+            } catch (Exception e) {
+                BuildcraftLegacy.LOGGER.error("An error occurred while generating pipe json, affected pipe: {}", entry.getKey(), e);
+            }
+        }
+
+        // Clean up orphaned pipe configs (pipes that no longer exist in code)
+        if (dir.isDirectory()) {
+            File[] existingFiles = dir.listFiles((f, name) -> name.endsWith(".json"));
+            if (existingFiles != null) {
+                for (File file : existingFiles) {
+                    String pipeId = file.getName().replace(".json", "");
+                    if (!pipes.containsKey(pipeId)) {
+                        file.delete();
+                        BuildcraftLegacy.LOGGER.info("Removed orphaned pipe config: {}", pipeId);
+                    }
                 }
             }
         }
