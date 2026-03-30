@@ -1,6 +1,6 @@
 # BuildCraft Legacy (NeoForge 1.21.1)
 
-> ⚠️ 仅自用，基于 [Buildcraft-Legacy](https://github.com/Thepigcat76/Buildcraft-Legacy) 修改，只保留管道系统
+> ⚠️ 仅自用，基于 [Buildcraft-Legacy](https://github.com/Thepigcat76/Buildcraft-Legacy) 修改
 
 ## 管道
 
@@ -20,6 +20,24 @@
 | ⬛ 虚空管道 | 直接销毁物品 | 1.0 blocks/s |
 
 速度可通过配置文件调整（单位：每秒经过的管道段数）。
+
+## 储罐 (Tank)
+
+大容量流体存储，支持水、岩浆等任意流体。
+
+- **容量**: 8000 mB（可通过配置调整）
+- **堆叠**: 垂直放置多个储罐自动合并，容量叠加
+- **桶交互**: 直接用桶右键装/卸流体
+- **可搬运**: 破坏时保留流体，放置后恢复（需配置 `tankRetainFluids: true`）
+- **管道连接**: 可与管道连接，自动输入/输出流体
+
+## 箱子 (Crate)
+
+大容量物品存储。
+
+- **容量**: 4096 个物品（可通过配置调整）
+- **快速取物**: 左键正面取出 1 个，潜行+左键取出一组
+- **可搬运**: 破坏时保留物品（需配置 `crateRetainItems: true`）
 
 ## 依赖
 
