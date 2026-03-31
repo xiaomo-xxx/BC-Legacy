@@ -96,7 +96,8 @@ dependencies {
 
     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-    implementation "com.github.Porting-Dead-Mods:Porting-Dead-Libs:${pdl_version}"
+    compileOnly files("libs/portingdeadlibs-1.1.8.jar")
+    jarJar(files("libs/portingdeadlibs-1.1.8.jar"))
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
