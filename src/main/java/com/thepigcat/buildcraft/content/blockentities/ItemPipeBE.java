@@ -168,7 +168,7 @@ public class ItemPipeBE extends PipeBlockEntity<IItemHandler> {
         if (level.isClientSide()) return;
 
         // Fast path: skip all work if pipe has no item and isn't mid-movement
-        if (!active && this.movement <= 0f) return;
+        if (!active && this.movement <= 0f && this.itemHandler.getStackInSlot(0).isEmpty()) return;
 
         // Item has reached the end of its movement through this pipe
         if (this.movement >= 1f) {

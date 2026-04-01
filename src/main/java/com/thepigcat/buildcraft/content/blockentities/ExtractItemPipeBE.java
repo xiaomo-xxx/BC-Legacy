@@ -34,8 +34,8 @@ public class ExtractItemPipeBE extends ItemPipeBE {
     public void tick() {
         if (level.isClientSide()) return;
 
-        // Extract items every 5 ticks for smoother flow
-        if (level.getGameTime() % 5 == 0 && itemHandler.getStackInSlot(0).isEmpty()) {
+        // Extract items every tick for smooth continuous flow
+        if (itemHandler.getStackInSlot(0).isEmpty()) {
             BlockCapabilityCache<IItemHandler, Direction> cache = capabilityCaches.get(this.extracting);
             if (cache != null) {
                 IItemHandler extractingHandler = cache.getCapability();

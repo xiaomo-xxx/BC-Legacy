@@ -72,7 +72,7 @@ public class DiamondItemPipeBE extends ItemPipeBE implements MenuProvider {
         }
 
         // Fast path: skip if pipe has no item and isn't mid-movement
-        if (!active && this.movement <= 0f) return;
+        if (!active && this.movement <= 0f && this.itemHandler.getStackInSlot(0).isEmpty()) return;
 
         // Movement logic
         if (this.movement >= 1f) {
