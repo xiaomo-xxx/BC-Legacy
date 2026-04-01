@@ -81,10 +81,19 @@ public class CrateBlock extends BaseEntityBlock {
         if (!state.is(newState.getBlock())) {
             CrateBE crateBE = BlockUtils.getBE(CrateBE.class, level, pos);
             if (crateBE != null && !BCConfig.crateRetainItems) {
-                Containers.dropContents(level, pos, NonNullList.of(ItemStack.EMPTY, crateBE.getItemHandler().getStackInSlot(0)));
+                // Drop items directly, bypassing ContainerBlock.dropItems which caps at maxStackSize
+                ItemStack stored = crateBE.getItemHandler().getStackInSlot(0);
+                if (!stored.isEmpty()) {
+                    Containers.dropContents(level, pos, NonNullList.of(ItemStack.EMPTY, stored.copyWithCount(stored.getCount())));
+                }
             }
         }
-        super.onRemove(state, level, pos, newState, movedByPiston);
+        // Skip ContainerBlock.onRemove to avoid PDL framework's getStackLimit capping at maxStackSize
+        // The getDrops method handles saving crate contents via data components
+        // Manually remove block entity (what Block.onRemove does internally)
+        if (!state.is(newState.getBlock())) {
+            level.removeBlockEntity(pos);
+        }
     }
 
     @Override

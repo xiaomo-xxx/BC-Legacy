@@ -25,36 +25,46 @@ public class PipeBERenderer implements BlockEntityRenderer<ItemPipeBE> {
         Direction from = pipeBlockEntity.getFrom();
         Direction to = pipeBlockEntity.getTo();
 
-        // Smooth interpolation with eased progress
-        float rawProgress = Mth.lerp(partialTicks, pipeBlockEntity.lastMovement, pipeBlockEntity.movement);
-        // Clamp to [0, 1]
-        rawProgress = Mth.clamp(rawProgress, 0f, 1f);
-
         poseStack.pushPose();
         {
             if (from != null && to != null) {
-                // Item moves from "from" side center toward "to" side center
-                // At progress=0: item is at from side
-                // At progress=1: item is at to side
+                // Interpolate movement (may be negative for smooth handoff from previous pipe)
+                float progress = Mth.lerp(partialTicks, pipeBlockEntity.lastMovement, pipeBlockEntity.movement);
+
                 Vec3i fromNormal = from.getNormal();
                 Vec3i toNormal = to.getNormal();
 
-                // Start position: center of the "from" connection face
+                // Start: entry face (progress = -0.5)
+                // Center: pipe center (progress = 0.0)
+                // End: exit face (progress = 1.0)
+                // Map: at progress=-0.5 → at "from" face, at progress=0.0 → center, at progress=1.0 → "to" face
                 float startX = 0.5f + fromNormal.getX() * 0.5f;
                 float startY = 0.5f + fromNormal.getY() * 0.5f;
                 float startZ = 0.5f + fromNormal.getZ() * 0.5f;
 
-                // End position: center of the "to" connection face
+                float midX = 0.5f;
+                float midY = 0.5f;
+                float midZ = 0.5f;
+
                 float endX = 0.5f + toNormal.getX() * 0.5f;
                 float endY = 0.5f + toNormal.getY() * 0.5f;
                 float endZ = 0.5f + toNormal.getZ() * 0.5f;
 
-                // Smooth ease-in-out interpolation
-                float t = smoothStep(rawProgress);
-
-                float x = Mth.lerp(t, startX, endX);
-                float y = Mth.lerp(t, startY, endY);
-                float z = Mth.lerp(t, startZ, endZ);
+                float x, y, z;
+                if (progress < 0f) {
+                    // Smooth handoff phase: from entry face to center
+                    float t = progress + 0.5f; // 0.0 to 0.5 → maps to 0.0 to 1.0
+                    t = Mth.clamp(t, 0f, 1f);
+                    x = Mth.lerp(t, startX, midX);
+                    y = Mth.lerp(t, startY, midY);
+                    z = Mth.lerp(t, startZ, midZ);
+                } else {
+                    // Normal phase: center to exit face with ease-in-out
+                    float t = smoothStep(Mth.clamp(progress, 0f, 1f));
+                    x = Mth.lerp(t, midX, endX);
+                    y = Mth.lerp(t, midY, endY);
+                    z = Mth.lerp(t, midZ, endZ);
+                }
 
                 poseStack.translate(x, y, z);
             } else {
@@ -69,9 +79,16 @@ public class PipeBERenderer implements BlockEntityRenderer<ItemPipeBE> {
             }
             poseStack.scale(scale, scale, scale);
 
-            // Gentle bobbing animation while in pipe
-            float bob = Mth.sin((pipeBlockEntity.getLevel() != null ? pipeBlockEntity.getLevel().getGameTime() : 0) + partialTicks) * 0.02f;
-            poseStack.translate(0, bob, 0);
+            // Rotation: smooth continuous spin like dropped items
+            long gameTime = pipeBlockEntity.getLevel() != null ? pipeBlockEntity.getLevel().getGameTime() : 0;
+            float tick = gameTime + partialTicks;
+            float rotation = tick * 3.0f; // degrees per tick
+            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(rotation));
+
+            // Gentle bobbing animation (sinusoidal, like vanilla items)
+            float bob = Mth.sin(tick * 0.15f) * 0.03f;
+            float bobX = Mth.cos(tick * 0.12f) * 0.02f;
+            poseStack.translate(bobX, bob, 0);
 
             Minecraft.getInstance().getItemRenderer().renderStatic(
                     stack, ItemDisplayContext.NONE, packedLight, packedOverlay,

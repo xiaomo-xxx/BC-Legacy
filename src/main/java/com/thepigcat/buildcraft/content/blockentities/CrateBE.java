@@ -27,7 +27,7 @@ public class CrateBE extends BlockEntity {
             public boolean isItemValid(int slot, ItemStack stack) {
                 ItemStack stackInSlot = getStackInSlot(slot);
                 return stackInSlot.isEmpty()
-                        || (stack.is(stackInSlot.getItem()) && stackInSlot.getCount() < getSlotLimit(slot));
+                        || (stack.is(stackInSlot.getItem()) && getStackInSlot(slot).getCount() < getSlotLimit(slot));
             }
 
             @Override

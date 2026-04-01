@@ -85,7 +85,7 @@ public abstract class PipeBlockEntity<CAP> extends BlockEntity {
      * Send a packet only to players tracking this chunk, instead of broadcast to all.
      * Falls back to sendToAllPlayers if not a ServerLevel.
      */
-    protected void sendToTracking(Object payload) {
+    public void sendToTracking(Object payload) {
         if (level instanceof ServerLevel serverLevel) {
             PacketDistributor.sendToPlayersTrackingChunk(serverLevel,
                     new net.minecraft.world.level.ChunkPos(worldPosition), (net.minecraft.network.protocol.common.custom.CustomPacketPayload) payload);

@@ -59,7 +59,12 @@ public class JumboItemHandler implements IItemHandler, INBTSerializable<Tag> {
     @Override
     public ItemStack getStackInSlot(int slot) {
         validateSlotIndex(slot);
-        return this.getItems().get(slot).getSlotStack();
+        BigStack bigStack = this.getItems().get(slot);
+        // Clamp amount to slotLimit to prevent oversized ItemStacks
+        if (bigStack.getAmount() > slotLimit) {
+            bigStack.setAmount(slotLimit);
+        }
+        return bigStack.getSlotStack();
     }
 
     public List<BigStack> getItems() {
@@ -70,11 +75,13 @@ public class JumboItemHandler implements IItemHandler, INBTSerializable<Tag> {
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (isItemValid(slot, stack)) {
             BigStack bigStack = this.getItems().get(slot);
-            int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
+            int space = getSlotLimit(slot) - bigStack.getAmount();
+            if (space <= 0) return stack;
+            int inserted = Math.min(space, stack.getCount());
             if (!simulate) {
                 if (bigStack.getStack().isEmpty())
                     bigStack.setStack(stack.copyWithCount(stack.getMaxStackSize()));
-                bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, getSlotLimit(slot)));
+                bigStack.setAmount(bigStack.getAmount() + inserted);
                 onChanged();
             }
             if (inserted == stack.getCount()) return ItemStack.EMPTY;

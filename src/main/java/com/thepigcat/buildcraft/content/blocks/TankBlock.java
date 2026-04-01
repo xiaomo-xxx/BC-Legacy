@@ -263,7 +263,12 @@ public class TankBlock extends ContainerBlock {
                 removeFluidFromBottomTank(level, pos);
             }
         }
-        super.onRemove(state, level, pos, newState, movedByPiston);
+        // Skip ContainerBlock.onRemove to avoid PDL framework's dropItems on fluid handler
+        // The getDrops method handles saving tank contents via data components
+        // Manually remove block entity (what Block.onRemove does internally)
+        if (!state.is(newState.getBlock())) {
+            level.removeBlockEntity(pos);
+        }
     }
 
     private static void removeFluidFromBottomTank(Level level, BlockPos pos) {

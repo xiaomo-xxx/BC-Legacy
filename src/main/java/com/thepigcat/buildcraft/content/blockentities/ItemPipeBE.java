@@ -178,39 +178,43 @@ public class ItemPipeBE extends PipeBlockEntity<IItemHandler> {
                 Direction bestOutput = chooseBestOutput(outputs, stack);
 
                 if (bestOutput != null) {
-                    IItemHandler targetHandler = capabilityCaches.get(bestOutput).getCapability();
-                    ItemStack remainder = ItemHandlerHelper.insertItem(targetHandler, stack, false);
+                    ItemPipeBE nextPipe = BlockUtils.getBE(ItemPipeBE.class, level, worldPosition.relative(bestOutput));
 
-                    // Track items sent to this direction
-                    itemsSent.merge(bestOutput, stack.getCount() - remainder.getCount(), Integer::sum);
-
-                    if (remainder.isEmpty()) {
+                    if (nextPipe != null && nextPipe.itemHandler.getStackInSlot(0).isEmpty()) {
+                        // Transfer item to next pipe for continuous visual flow
+                        nextPipe.itemHandler.setStackInSlot(0, stack.copy());
                         itemHandler.setStackInSlot(0, ItemStack.EMPTY);
 
-                        // Sync visual state to next pipe (item already inserted via capability above)
-                        ItemPipeBE nextPipe = BlockUtils.getBE(ItemPipeBE.class, level, worldPosition.relative(bestOutput));
-                        if (nextPipe != null) {
-                            nextPipe.setFrom(bestOutput.getOpposite());
-                            nextPipe.lastMovement = 0;
-                            nextPipe.movement = 0;
+                        // Set up next pipe direction
+                        nextPipe.setFrom(bestOutput.getOpposite());
+                        List<Direction> nextOutputs = nextPipe.getValidOutputs();
+                        Direction nextTo = nextPipe.chooseBestOutput(nextOutputs, stack);
+                        nextPipe.setTo(nextTo != null ? nextTo : nextPipe.from);
 
-                            // Pick next pipe's output
-                            List<Direction> nextOutputs = nextPipe.getValidOutputs();
-                            Direction nextTo = nextPipe.chooseBestOutput(nextOutputs, stack);
-                            if (nextTo != null) {
-                                nextPipe.setTo(nextTo);
-                            } else {
-                                nextPipe.setTo(nextPipe.from);
-                            }
+                        // Smooth handoff: start next pipe at entry face (progress = -0.5)
+                        // so the item appears at the connection point between pipes
+                        nextPipe.lastMovement = -0.5f;
+                        nextPipe.movement = -0.5f;
 
-                            sendToTracking(new SyncPipeMovementPayload(nextPipe.getBlockPos(), 0, 0));
-                            sendToTracking(new SyncPipeDirectionPayload(nextPipe.getBlockPos(),
-                                    Optional.ofNullable(nextPipe.from), Optional.ofNullable(nextPipe.to)));
-                        }
+                        // Deactivate current pipe
+                        this.active = false;
+
+                        nextPipe.sendToTracking(new SyncPipeMovementPayload(nextPipe.getBlockPos(), nextPipe.movement, nextPipe.lastMovement));
+                        nextPipe.sendToTracking(new SyncPipeDirectionPayload(nextPipe.getBlockPos(),
+                                Optional.ofNullable(nextPipe.from), Optional.ofNullable(nextPipe.to)));
                     } else {
-                        // Partial insert - keep remainder in pipe
-                        itemHandler.setStackInSlot(0, remainder);
-                        moveItemBackward();
+                        // Next pipe busy or direct to container — use standard insertion
+                        IItemHandler targetHandler = capabilityCaches.get(bestOutput).getCapability();
+                        ItemStack remainder = ItemHandlerHelper.insertItem(targetHandler, stack, false);
+                        itemsSent.merge(bestOutput, stack.getCount() - remainder.getCount(), Integer::sum);
+
+                        if (remainder.isEmpty()) {
+                            itemHandler.setStackInSlot(0, ItemStack.EMPTY);
+                            this.active = false;
+                        } else {
+                            itemHandler.setStackInSlot(0, remainder);
+                            moveItemBackward();
+                        }
                     }
                 } else {
                     // No valid outputs, bounce back
