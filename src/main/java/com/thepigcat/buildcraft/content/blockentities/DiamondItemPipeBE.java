@@ -122,12 +122,11 @@ public class DiamondItemPipeBE extends ItemPipeBE implements MenuProvider {
         }
 
         // Advance movement
+        this.lastMovement = this.movement;
         if (!this.itemHandler.getStackInSlot(0).isEmpty()) {
-            this.lastMovement = this.movement;
-            this.movement += transferSpeed; // use cached speed
+            this.movement += transferSpeed;
         } else {
-            lastMovement = 0;
-            movement = 0;
+            this.movement = 0;
         }
     }
 

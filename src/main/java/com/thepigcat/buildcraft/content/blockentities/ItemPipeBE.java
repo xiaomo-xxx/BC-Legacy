@@ -222,12 +222,11 @@ public class ItemPipeBE extends PipeBlockEntity<IItemHandler> {
         }
 
         // Advance movement if item is in pipe
+        this.lastMovement = this.movement;
         if (!this.itemHandler.getStackInSlot(0).isEmpty()) {
-            this.lastMovement = this.movement;
-            this.movement += transferSpeed; // use cached speed
+            this.movement += transferSpeed;
         } else {
-            lastMovement = 0;
-            movement = 0;
+            this.movement = 0;
         }
     }
 

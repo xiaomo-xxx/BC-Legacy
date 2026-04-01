@@ -27,17 +27,19 @@ public final class CommonEvents {
             if (blockState.getBlock() instanceof CrateBlock && event.getFace().equals(blockState.getValue(BlockStateProperties.HORIZONTAL_FACING))) {
                 CrateBE be = BlockUtils.getBE(CrateBE.class, level, pos);
                 if (be != null) {
+                    // Always cancel break when clicking crate front face
+                    event.setCanceled(true);
+
                     JumboItemHandler itemHandler = be.getItemHandler();
                     ItemStack stack = itemHandler.getStackInSlot(0);
-                    int count = 1;
-                    Player player = event.getEntity();
-                    if (player.isShiftKeyDown()) {
-                        count = Math.min(stack.getMaxStackSize(), stack.getCount());
-                    }
-                    if (count > 0 && !stack.isEmpty()) {
+                    if (!stack.isEmpty()) {
+                        int count = 1;
+                        Player player = event.getEntity();
+                        if (player.isShiftKeyDown()) {
+                            count = Math.min(stack.getMaxStackSize(), stack.getCount());
+                        }
                         ItemStack extracted = itemHandler.extractItem(0, count, false);
                         ItemHandlerHelper.giveItemToPlayer(player, extracted);
-                        event.setCanceled(true); // prevent block break when extracting items
                     }
                 }
             }

@@ -314,24 +314,34 @@ public class TankBlock extends ContainerBlock {
 
     @Override
     protected @NotNull List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof TankBE be && BCConfig.tankRetainFluids) {
+        if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof TankBE be) {
             ItemStack stack = new ItemStack(this);
-            BlockPos bottomPos = be.getBottomTankPos();
-            if (bottomPos == null) {
-                // 单个储罐
-                FluidStack fluidStack = be.getFluidTank().getFluidInTank(0);
-                if (!fluidStack.isEmpty() && fluidStack.getAmount() > 0) {
-                    stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(fluidStack));
+            if (BCConfig.tankRetainFluids) {
+                try {
+                    BlockPos bottomPos = be.getBottomTankPos();
+                    if (bottomPos == null) {
+                        // 单个储罐
+                        FluidStack fluidStack = be.getFluidTank().getFluidInTank(0);
+                        if (!fluidStack.isEmpty() && fluidStack.getAmount() > 0) {
+                            stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(fluidStack));
+                        }
+                    } else {
+                        // 堆叠储罐：计算当前储罐的流体
+                        FluidStack totalFluid = be.getFluidHandler().getFluidInTank(0);
+                        int tankIndex = be.getBlockPos().getY() - bottomPos.getY();
+                        int prevFluidAmount = tankIndex * BCConfig.tankCapacity;
+                        int myFluidAmount = Math.min(Math.max(totalFluid.getAmount() - prevFluidAmount, 0), BCConfig.tankCapacity);
+                        if (myFluidAmount > 0) {
+                            stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(totalFluid.copyWithAmount(myFluidAmount)));
+                        }
+                    }
+                } catch (Exception e) {
+                    // Fallback: save whatever is in the tank
+                    FluidStack fluid = be.getFluidTank().getFluidInTank(0);
+                    if (!fluid.isEmpty() && fluid.getAmount() > 0) {
+                        stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(fluid));
+                    }
                 }
-                return List.of(stack);
-            }
-            // 堆叠储罐：计算当前储罐的流体
-            FluidStack totalFluid = be.getFluidHandler().getFluidInTank(0);
-            int tankIndex = be.getBlockPos().getY() - bottomPos.getY();
-            int prevFluidAmount = tankIndex * BCConfig.tankCapacity;
-            int myFluidAmount = Math.min(Math.max(totalFluid.getAmount() - prevFluidAmount, 0), BCConfig.tankCapacity);
-            if (myFluidAmount > 0) {
-                stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(totalFluid.copyWithAmount(myFluidAmount)));
             }
             return List.of(stack);
         }
