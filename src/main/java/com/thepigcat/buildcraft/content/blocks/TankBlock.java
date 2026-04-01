@@ -158,19 +158,32 @@ public class TankBlock extends ContainerBlock {
     @Override
     protected @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         TankBE tankBE = BlockUtils.getBE(TankBE.class, level, pos);
+        if (tankBE == null) {
+            return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        }
         FluidStack fluidInTank = tankBE.getFluidHandler().getFluidInTank(0);
         boolean value = neighborState.is(this);
         if (direction == Direction.UP) {
             if (value) {
-                FluidStack fluidInTank1 = BlockUtils.getBE(TankBE.class, level, pos.above()).getFluidHandler().getFluidInTank(0);
-                value = fluidInTank1.is(fluidInTank.getFluid()) || fluidInTank.isEmpty() || fluidInTank1.isEmpty();
+                TankBE aboveBE = BlockUtils.getBE(TankBE.class, level, pos.above());
+                if (aboveBE != null) {
+                    FluidStack fluidInTank1 = aboveBE.getFluidHandler().getFluidInTank(0);
+                    value = fluidInTank1.is(fluidInTank.getFluid()) || fluidInTank.isEmpty() || fluidInTank1.isEmpty();
+                } else {
+                    value = false;
+                }
             }
             tankBE.setTopJoined(value);
             return state.setValue(TOP_JOINED, value);
         } else if (direction == Direction.DOWN) {
             if (value) {
-                FluidStack fluidInTank1 = BlockUtils.getBE(TankBE.class, level, pos.below()).getFluidHandler().getFluidInTank(0);
-                value = fluidInTank1.is(fluidInTank.getFluid()) || fluidInTank.isEmpty() || fluidInTank1.isEmpty();
+                TankBE belowBE = BlockUtils.getBE(TankBE.class, level, pos.below());
+                if (belowBE != null) {
+                    FluidStack fluidInTank1 = belowBE.getFluidHandler().getFluidInTank(0);
+                    value = fluidInTank1.is(fluidInTank.getFluid()) || fluidInTank.isEmpty() || fluidInTank1.isEmpty();
+                } else {
+                    value = false;
+                }
             }
             tankBE.setBottomJoined(value);
             return state.setValue(BOTTOM_JOINED, value);
@@ -258,16 +271,20 @@ public class TankBlock extends ContainerBlock {
 
     private static void removeFluidFromBottomTank(Level level, BlockPos pos) {
         TankBE removedTank = BlockUtils.getBE(TankBE.class, level, pos);
+        if (removedTank == null || removedTank.getBottomTankPos() == null) return;
         FluidStack fluidStack = removedTank.getFluidHandler().getFluidInTank(0);
         int tank = removedTank.getBlockPos().getY() - removedTank.getBottomTankPos().getY();
         int prevFluidAmount = tank * BCConfig.tankCapacity;
         int fluidAmount = Math.min(fluidStack.getAmount() - prevFluidAmount, BCConfig.tankCapacity);
-        removedTank.getFluidHandler().drain(fluidAmount, IFluidHandler.FluidAction.EXECUTE);
+        if (fluidAmount > 0) {
+            removedTank.getFluidHandler().drain(fluidAmount, IFluidHandler.FluidAction.EXECUTE);
+        }
     }
 
     private static void moveFluidsAbove(Level level, BlockPos pos) {
         TankBE removedTank = BlockUtils.getBE(TankBE.class, level, pos);
         TankBE aboveTank = BlockUtils.getBE(TankBE.class, level, pos.above());
+        if (removedTank == null || aboveTank == null) return;
         FluidStack fluidInTank = removedTank.getFluidTank().getFluidInTank(0);
         int amount = Math.max(fluidInTank.getAmount() - BCConfig.tankCapacity, 0);
         aboveTank.initialFluid = fluidInTank.copyWithAmount(amount);
@@ -275,19 +292,22 @@ public class TankBlock extends ContainerBlock {
 
     private static void splitTank(Level level, BlockPos pos) {
         TankBE removedTank = BlockUtils.getBE(TankBE.class, level, pos);
+        if (removedTank == null || removedTank.getBottomTankPos() == null) return;
+
         FluidStack fluidStack = removedTank.getFluidHandler().getFluidInTank(0);
         int tank = removedTank.getBlockPos().getY() - removedTank.getBottomTankPos().getY();
 
         TankBE topTank = BlockUtils.getBE(TankBE.class, level, pos.above());
+        TankBE bottomTank = BlockUtils.getBE(TankBE.class, level, removedTank.getBottomTankPos());
+        if (topTank == null || bottomTank == null) return;
+
         int topFluidAmount = Math.max(fluidStack.getAmount() - ((tank + 1) * BCConfig.tankCapacity), 0);
         topTank.initialFluid = fluidStack.copyWithAmount(topFluidAmount);
 
         int prevFluidAmount = tank * BCConfig.tankCapacity;
         int fluidAmount = Math.min(fluidStack.getAmount() - prevFluidAmount, BCConfig.tankCapacity);
-        BlockPos bottomTankPos = removedTank.getBottomTankPos();
 
-        TankBE bottomTank = BlockUtils.getBE(TankBE.class, level, bottomTankPos);
-        bottomTank.initialFluid = removedTank.getFluidHandler().getFluidInTank(0).copyWithAmount(fluidStack.getAmount() - topFluidAmount - fluidAmount);
+        bottomTank.initialFluid = fluidStack.copyWithAmount(Math.max(fluidStack.getAmount() - topFluidAmount - fluidAmount, 0));
     }
 
     @Override
@@ -299,12 +319,22 @@ public class TankBlock extends ContainerBlock {
     protected @NotNull List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof TankBE be && BCConfig.tankRetainFluids) {
             ItemStack stack = new ItemStack(this);
-            FluidStack fluidStack = be.getFluidHandler().getFluidInTank(0);
-            int tank = be.getBlockPos().getY() - be.getBottomTankPos().getY();
-            int prevFluidAmount = tank * BCConfig.tankCapacity;
-            int fluidAmount = Math.min(fluidStack.getAmount() - prevFluidAmount, BCConfig.tankCapacity);
-            if (fluidAmount >= 0) {
-                stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(be.getFluidHandler().getFluidInTank(0).copyWithAmount(fluidAmount)));
+            BlockPos bottomPos = be.getBottomTankPos();
+            if (bottomPos == null) {
+                // 单个储罐
+                FluidStack fluidStack = be.getFluidTank().getFluidInTank(0);
+                if (!fluidStack.isEmpty() && fluidStack.getAmount() > 0) {
+                    stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(fluidStack));
+                }
+                return List.of(stack);
+            }
+            // 堆叠储罐：计算当前储罐的流体
+            FluidStack totalFluid = be.getFluidHandler().getFluidInTank(0);
+            int tankIndex = be.getBlockPos().getY() - bottomPos.getY();
+            int prevFluidAmount = tankIndex * BCConfig.tankCapacity;
+            int myFluidAmount = Math.min(Math.max(totalFluid.getAmount() - prevFluidAmount, 0), BCConfig.tankCapacity);
+            if (myFluidAmount > 0) {
+                stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(totalFluid.copyWithAmount(myFluidAmount)));
             }
             return List.of(stack);
         }

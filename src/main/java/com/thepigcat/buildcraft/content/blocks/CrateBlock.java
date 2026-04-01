@@ -78,24 +78,13 @@ public class CrateBlock extends BaseEntityBlock {
 
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock()) && !BCConfig.crateRetainItems) {
+        if (!state.is(newState.getBlock())) {
             CrateBE crateBE = BlockUtils.getBE(CrateBE.class, level, pos);
-            Containers.dropContents(level, pos, NonNullList.of(ItemStack.EMPTY, crateBE.getItemHandler().getStackInSlot(0)));
-        }
-
-        super.onRemove(state, level, pos, newState, movedByPiston);
-    }
-
-    @Override
-    protected @NotNull List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof CrateBE be && BCConfig.crateRetainItems) {
-            ItemStack stack = new ItemStack(this);
-            if (!be.getItemHandler().getStackInSlot(0).isEmpty()) {
-                stack.set(BCDataComponents.CRATE_CONTENT, BigStackContainerContents.fromItems(be.getItemHandler().getItems(), be.getItemHandler().getSlotLimit()));
+            if (crateBE != null && !BCConfig.crateRetainItems) {
+                Containers.dropContents(level, pos, NonNullList.of(ItemStack.EMPTY, crateBE.getItemHandler().getStackInSlot(0)));
             }
-            return List.of(stack);
         }
-        return super.getDrops(state, params);
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
     @Override
