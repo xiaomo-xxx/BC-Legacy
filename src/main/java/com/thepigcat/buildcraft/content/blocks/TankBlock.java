@@ -128,9 +128,6 @@ public class TankBlock extends ContainerBlock {
                 return ItemInteractionResult.SUCCESS;
             }
         }
-        if (!level.isClientSide()) {
-            player.sendSystemMessage(Component.literal("Bottom pos: " + BlockUtils.getBE(TankBE.class, level, pos).getBottomTankPos()));
-        }
         return ItemInteractionResult.SUCCESS;
     }
 

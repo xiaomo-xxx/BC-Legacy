@@ -11,8 +11,6 @@ import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.List;
-import java.util.Optional;
 
 public class ExtractItemPipeBE extends ItemPipeBE {
     public ExtractItemPipeBE(BlockPos pos, BlockState blockState) {

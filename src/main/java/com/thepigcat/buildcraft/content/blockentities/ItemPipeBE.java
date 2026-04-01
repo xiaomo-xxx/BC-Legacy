@@ -185,11 +185,10 @@ public class ItemPipeBE extends PipeBlockEntity<IItemHandler> {
                     if (remainder.isEmpty()) {
                         itemHandler.setStackInSlot(0, ItemStack.EMPTY);
 
-                        // Move item visual to next pipe or stop
+                        // Sync visual state to next pipe (item already inserted via capability above)
                         ItemPipeBE nextPipe = BlockUtils.getBE(ItemPipeBE.class, level, worldPosition.relative(bestOutput));
                         if (nextPipe != null) {
                             nextPipe.setFrom(bestOutput.getOpposite());
-                            nextPipe.itemHandler.setStackInSlot(0, stack);
                             nextPipe.lastMovement = 0;
                             nextPipe.movement = 0;
 

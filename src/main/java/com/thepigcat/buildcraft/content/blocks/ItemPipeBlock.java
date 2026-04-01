@@ -53,10 +53,14 @@ public class ItemPipeBlock extends PipeBlock {
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
-            ItemPipeBE crateBE = BlockUtils.getBE(ItemPipeBE.class, level, pos);
-            Containers.dropContents(level, pos, NonNullList.of(ItemStack.EMPTY, crateBE.getItemHandler().getStackInSlot(0)));
+            ItemPipeBE pipeBE = BlockUtils.getBE(ItemPipeBE.class, level, pos);
+            if (pipeBE != null) {
+                ItemStack stack = pipeBE.getItemHandler().getStackInSlot(0);
+                if (!stack.isEmpty()) {
+                    Containers.dropContents(level, pos, NonNullList.of(ItemStack.EMPTY, stack));
+                }
+            }
         }
-
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 

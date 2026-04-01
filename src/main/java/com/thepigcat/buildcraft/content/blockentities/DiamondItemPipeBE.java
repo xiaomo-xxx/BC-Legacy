@@ -89,10 +89,10 @@ public class DiamondItemPipeBE extends ItemPipeBE implements MenuProvider {
                         if (remainder.isEmpty()) {
                             itemHandler.setStackInSlot(0, ItemStack.EMPTY);
 
+                            // Sync visual state to next pipe (item already inserted via capability above)
                             ItemPipeBE nextPipe = BlockUtils.getBE(ItemPipeBE.class, level, worldPosition.relative(bestOutput));
                             if (nextPipe != null) {
                                 nextPipe.setFrom(bestOutput.getOpposite());
-                                nextPipe.itemHandler.insertItem(0, stack, false);
                                 nextPipe.lastMovement = 0;
                                 nextPipe.movement = 0;
 

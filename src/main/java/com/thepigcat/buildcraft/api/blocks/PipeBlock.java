@@ -149,6 +149,9 @@ public abstract class PipeBlock extends BaseEntityBlock {
     public @NotNull BlockState updateShape(BlockState blockState, Direction facingDirection, BlockState facingBlockState, LevelAccessor level, BlockPos blockPos, BlockPos facingBlockPos) {
         int connectionIndex = facingDirection.get3DDataValue();
         PipeBlockEntity<?> pipeBE = BlockUtils.getBE(PipeBlockEntity.class, level, blockPos);
+        if (pipeBE == null) {
+            return blockState;
+        }
         PipeState connectionType = getConnectionType(level, blockPos, blockState, facingDirection, facingBlockPos);
         if (connectionType != PipeState.NONE) {
             pipeBE.getDirections().add(facingDirection);
