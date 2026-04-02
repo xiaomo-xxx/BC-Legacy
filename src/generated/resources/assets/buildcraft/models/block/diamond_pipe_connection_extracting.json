@@ -1,6 +1,0 @@
-{
-  "parent": "buildcraft:block/pipe_connection",
-  "textures": {
-    "texture": "buildcraft:block/diamond_pipe_extracting"
-  }
-}

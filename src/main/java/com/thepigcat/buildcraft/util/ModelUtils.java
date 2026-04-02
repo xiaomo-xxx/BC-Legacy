@@ -159,9 +159,11 @@ public final class ModelUtils {
     });
 
     public static final BiFunction<Pipe, ResourceLocation, String> DEFAULT_BLOCK_MODEL_FILE = ((pipe, texture) -> {
+        String path = texture.getPath();
+
         // Diamond pipe uses per-face textures for the base model
-        if (texture.getPath().endsWith("_base") && texture.getPath().contains("diamond")) {
-            String blockPath = texture.getPath().replace("_base", "").replace("block/", "");
+        if (path.endsWith("_base") && path.contains("diamond")) {
+            String blockPath = path.replace("_base", "").replace("block/", "");
             return """
                     {
                       "parent": "buildcraft:block/pipe_base_colored",
@@ -176,13 +178,47 @@ public final class ModelUtils {
                     }""".formatted(blockPath, blockPath, blockPath, blockPath, blockPath, blockPath);
         }
 
+        // Diamond pipe connection uses per-direction textures
+        if (path.contains("diamond") && path.endsWith("_connection")) {
+            String blockPath = path.replace("_connection", "").replace("block/", "");
+            return """
+                    {
+                      "parent": "buildcraft:block/pipe_connection_colored",
+                      "textures": {
+                        "down": "buildcraft:block/%s_down",
+                        "up": "buildcraft:block/%s_up",
+                        "north": "buildcraft:block/%s_north",
+                        "south": "buildcraft:block/%s_south",
+                        "west": "buildcraft:block/%s_west",
+                        "east": "buildcraft:block/%s_east"
+                      }
+                    }""".formatted(blockPath, blockPath, blockPath, blockPath, blockPath, blockPath);
+        }
+
+        // Diamond pipe extracting connection uses the extracting texture per-face
+        if (path.contains("diamond") && path.endsWith("_connection_extracting")) {
+            String blockPath = path.replace("_connection_extracting", "").replace("block/", "");
+            return """
+                    {
+                      "parent": "buildcraft:block/pipe_connection_colored",
+                      "textures": {
+                        "down": "buildcraft:block/%s_extracting",
+                        "up": "buildcraft:block/%s_extracting",
+                        "north": "buildcraft:block/%s_extracting",
+                        "south": "buildcraft:block/%s_extracting",
+                        "west": "buildcraft:block/%s_extracting",
+                        "east": "buildcraft:block/%s_extracting"
+                      }
+                    }""".formatted(blockPath, blockPath, blockPath, blockPath, blockPath, blockPath);
+        }
+
         int textureIndex = 0;
         String parent = "";
-        if (texture.getPath().endsWith("_connection")) {
+        if (path.endsWith("_connection")) {
             parent = "buildcraft:block/pipe_connection";
-        } else if (texture.getPath().endsWith("_base")) {
+        } else if (path.endsWith("_base")) {
             parent = "buildcraft:block/pipe_base";
-        } else if (texture.getPath().endsWith("_connection_extracting")) {
+        } else if (path.endsWith("_connection_extracting")) {
             textureIndex = 1;
             parent = "buildcraft:block/pipe_connection";
         }

@@ -1,4 +1,4 @@
-// 1.21.1	2026-03-30T03:47:59.148913552	Tags for minecraft:block mod id buildcraft
+// 1.21.1	2026-04-02T10:36:15.380612605	Tags for minecraft:block mod id buildcraft
 df848520655cd16a5dd558cb7313d8976097b3ec data/minecraft/tags/block/mineable/axe.json
-0bf147fe4a018c5efb3dada4cb8f0535ae95d050 data/minecraft/tags/block/mineable/pickaxe.json
+970441a563545de5ad8392d2c6eb9b555402a451 data/minecraft/tags/block/mineable/pickaxe.json
 3a632d784b33bc7d6f2fb4f25388c0f5dc1c9276 data/minecraft/tags/block/mineable/shovel.json

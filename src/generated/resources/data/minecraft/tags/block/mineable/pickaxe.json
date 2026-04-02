@@ -7,8 +7,8 @@
     "buildcraft:void_pipe",
     "buildcraft:sandstone_pipe",
     "buildcraft:emerald_pipe",
-    "buildcraft:iron_pipe",
     "buildcraft:quartz_pipe",
+    "buildcraft:iron_pipe",
     "buildcraft:cobblestone_pipe"
   ]
 }
