@@ -332,12 +332,22 @@ public class TankBlock extends ContainerBlock {
                         }
                     } else {
                         // 堆叠储罐：计算当前储罐的流体
-                        FluidStack totalFluid = be.getFluidHandler().getFluidInTank(0);
                         int tankIndex = be.getBlockPos().getY() - bottomPos.getY();
-                        int prevFluidAmount = tankIndex * BCConfig.tankCapacity;
-                        int myFluidAmount = Math.min(Math.max(totalFluid.getAmount() - prevFluidAmount, 0), BCConfig.tankCapacity);
-                        if (myFluidAmount > 0) {
-                            stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(totalFluid.copyWithAmount(myFluidAmount)));
+                        FluidStack fluidToSave = null;
+                        if (tankIndex == 0) {
+                            // 底层储罐：直接从 handler 读取
+                            fluidToSave = be.getFluidHandler().getFluidInTank(0);
+                        } else {
+                            // 上层储罐：优先使用 initialFluid（由 onRemove 中的 splitTank/moveFluidsAbove 设置）
+                            // 因为在底层被挖时，底层的 fluid 会被 drain，此时上层委托给底层的 handler 已经不准确了
+                            if (be.initialFluid != null && !be.initialFluid.isEmpty()) {
+                                fluidToSave = be.initialFluid;
+                            } else {
+                                fluidToSave = be.getFluidHandler().getFluidInTank(0);
+                            }
+                        }
+                        if (fluidToSave != null && !fluidToSave.isEmpty() && fluidToSave.getAmount() > 0) {
+                            stack.set(BCDataComponents.TANK_CONTENT, SimpleFluidContent.copyOf(fluidToSave));
                         }
                     }
                 } catch (Exception e) {
