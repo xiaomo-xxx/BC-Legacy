@@ -11,7 +11,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -46,43 +45,30 @@ public class BCBlockStateProvider extends BlockStateProvider {
     }
 
     private void tankBlock(Block block) {
-        ResourceLocation blockTexture = blockTexture(block);
-        ResourceLocation topTexture = suffix(blockTexture, "_top");
-        ResourceLocation topJoinedTexture = suffix(blockTexture, "_top_joined");
-        ResourceLocation sideTexture = suffix(blockTexture, "_side");
-        ResourceLocation sideJoinedTexture = suffix(blockTexture, "_side_joined");
+        ResourceLocation blockTex = blockTexture(block);
+        ResourceLocation topTexture = suffix(blockTex, "_top");
+        ResourceLocation topJoinedTexture = suffix(blockTex, "_top_joined");
+        ResourceLocation sideTexture = suffix(blockTex, "_side");
+        ResourceLocation sideJoinedTexture = suffix(blockTex, "_side_joined");
 
         getVariantBuilder(block)
                 .partialState().with(TankBlock.TOP_JOINED, true).with(TankBlock.BOTTOM_JOINED, true)
-                .modelForState().modelFile(tankModel(suffix(blockTexture, "_top_and_bottom_joined"), topJoinedTexture, sideJoinedTexture, topJoinedTexture)).addModel()
+                .modelForState().modelFile(tankModel(suffix(blockTex, "_top_and_bottom_joined"), topJoinedTexture, sideJoinedTexture, topJoinedTexture)).addModel()
                 .partialState().with(TankBlock.TOP_JOINED, true).with(TankBlock.BOTTOM_JOINED, false)
-                .modelForState().modelFile(tankModel(suffix(blockTexture, "_top_joined"), topJoinedTexture, sideTexture, topTexture)).addModel()
+                .modelForState().modelFile(tankModel(suffix(blockTex, "_top_joined"), topJoinedTexture, sideTexture, topTexture)).addModel()
                 .partialState().with(TankBlock.TOP_JOINED, false).with(TankBlock.BOTTOM_JOINED, true)
-                .modelForState().modelFile(tankModel(suffix(blockTexture, "_bottom_joined"), topTexture, sideJoinedTexture, topJoinedTexture)).addModel()
+                .modelForState().modelFile(tankModel(suffix(blockTex, "_bottom_joined"), topTexture, sideJoinedTexture, topJoinedTexture)).addModel()
                 .partialState().with(TankBlock.TOP_JOINED, false).with(TankBlock.BOTTOM_JOINED, false)
-                .modelForState().modelFile(tankModel(blockTexture, topTexture, sideTexture, topTexture)).addModel();
-    }
-
-    private void pillarBlock(Block block) {
-        pillarBlock(block, blockTexture(block));
+                .modelForState().modelFile(tankModel(blockTex, topTexture, sideTexture, topTexture)).addModel();
     }
 
     private void pillarBlock(Block block, ResourceLocation base) {
         ResourceLocation side = suffix(base, "_side");
         ResourceLocation top = suffix(base, "_top");
-        simpleBlock(
-                block,
-                models().cube(
-                        name(block),
-                        top,
-                        top,
-                        side,
-                        side,
-                        side,
-                        side
-                ).texture("particle", side)
-        );
+        simpleBlock(block, models().cube(name(block), top, top, side, side, side, side).texture("particle", side));
     }
+
+    // ===================== Pipes =====================
 
     private void pipeBlock(Block block) {
         ResourceLocation loc = key(block);
@@ -120,32 +106,38 @@ public class BCBlockStateProvider extends BlockStateProvider {
                 .condition(PipeBlock.CONNECTION[direction.get3DDataValue()], PipeBlock.PipeState.EXTRACTING).end();
     }
 
+    /**
+     * Base (center junction) model.
+     * Diamond: 6 directional textures with diagonal flow markers.
+     * Emerald: flat texture (no directional textures exist).
+     * Others: flat texture.
+     */
     private ModelFile pipeBaseModel(ResourceLocation blockLoc) {
         String path = blockLoc.getPath();
         String ns = blockLoc.getNamespace();
 
-        // Diamond & Emerald: 6 directional textures for the center body
-        if (path.equals("diamond") || path.equals("emerald")) {
+        if (path.equals("diamond")) {
             return models().withExistingParent(path + "_base", modLoc("block/pipe_base_colored"))
-                    .texture("down", rl(ns, "block/" + path + "_down"))
-                    .texture("up", rl(ns, "block/" + path + "_up"))
+                    .texture("down",  rl(ns, "block/" + path + "_down"))
+                    .texture("up",    rl(ns, "block/" + path + "_up"))
                     .texture("north", rl(ns, "block/" + path + "_north"))
                     .texture("south", rl(ns, "block/" + path + "_south"))
-                    .texture("west", rl(ns, "block/" + path + "_west"))
-                    .texture("east", rl(ns, "block/" + path + "_east"));
+                    .texture("west",  rl(ns, "block/" + path + "_west"))
+                    .texture("east",  rl(ns, "block/" + path + "_east"));
         }
-        // All other pipes use a simple flat texture
+
         return models().withExistingParent(path + "_base", modLoc("block/pipe_base"))
                 .texture("texture", rl(ns, "block/" + path));
     }
 
+    /**
+     * Connection arm model.
+     * Diamond & emerald: use dedicated "_connection" texture (clean grid, no corner diagonals).
+     */
     private ModelFile pipeConnectionModel(ResourceLocation blockLoc) {
         String path = blockLoc.getPath();
         String ns = blockLoc.getNamespace();
 
-        // Diamond & emerald: use a clean flat connection texture
-        // (no diagonal corner markers → pipe arms look like solid grid lines
-        //  matching the original BuildCraft classic appearance)
         if (path.equals("diamond") || path.equals("emerald")) {
             return models().withExistingParent(path + "_connection", modLoc("block/pipe_connection"))
                     .texture("texture", rl(ns, "block/" + path + "_connection"));
@@ -154,10 +146,14 @@ public class BCBlockStateProvider extends BlockStateProvider {
                 .texture("texture", rl(ns, "block/" + path));
     }
 
+    /**
+     * Extracting connection arm model.
+     * Diamond & emerald: use dedicated "_connection_extracting" texture with bright arrows.
+     */
     private ModelFile pipeExtractingModel(ResourceLocation blockLoc) {
         String path = blockLoc.getPath();
         String ns = blockLoc.getNamespace();
-        // Diamond & emerald: use dedicated extracting connection texture
+
         if (path.equals("diamond") || path.equals("emerald")) {
             return models().withExistingParent(path + "_connection_extracting", modLoc("block/pipe_connection"))
                     .texture("texture", rl(ns, "block/" + path + "_connection_extracting"));
@@ -166,6 +162,8 @@ public class BCBlockStateProvider extends BlockStateProvider {
                 .texture("texture", rl(ns, "block/" + path + "_extracting"));
     }
 
+    // ===================== Tank =====================
+
     private ModelFile tankModel(ResourceLocation baseLoc, ResourceLocation topLoc, ResourceLocation sideLoc, ResourceLocation bottomLoc) {
         return models().withExistingParent(baseLoc.getPath(), modLoc("block/tank_base"))
                 .texture("top", rl(topLoc.getNamespace(), topLoc.getPath()))
@@ -173,12 +171,18 @@ public class BCBlockStateProvider extends BlockStateProvider {
                 .texture("side", rl(sideLoc.getNamespace(), sideLoc.getPath()));
     }
 
+    // ===================== Helpers =====================
+
     private ResourceLocation key(Block block) {
         return BuiltInRegistries.BLOCK.getKey(block);
     }
 
     private String name(Block block) {
         return key(block).getPath();
+    }
+
+    private ResourceLocation rl(String ns, String path) {
+        return ResourceLocation.fromNamespaceAndPath(ns, path);
     }
 
     public ResourceLocation blockTexture(Block block, String suffix) {
@@ -197,21 +201,5 @@ public class BCBlockStateProvider extends BlockStateProvider {
 
     private ResourceLocation prefix(String prefix, ResourceLocation rl) {
         return rl.withPrefix(prefix);
-    }
-
-    private ResourceLocation inDir(ResourceLocation rl, String directory) {
-        StringBuilder path = new StringBuilder();
-        String[] dirs = rl.getPath().split("/");
-        for (int i = 0; i < dirs.length; i++) {
-            if (i == dirs.length - 1) {
-                path.append(directory).append("/");
-            }
-            path.append(dirs[i]).append(i != dirs.length - 1 ? "/" : "");
-        }
-        return ResourceLocation.fromNamespaceAndPath(rl.getNamespace(), path.toString());
-    }
-
-    private ResourceLocation rl(String ns, String path) {
-        return ResourceLocation.fromNamespaceAndPath(ns, path);
     }
 }
